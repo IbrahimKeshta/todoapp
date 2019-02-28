@@ -1,0 +1,33 @@
+{
+  "name": "TodoApp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "10.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt-node": "^0.1.0",
+    "body-parser": "^1.18.3",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^2.0.3",
+    "cookie-parser": "^1.4.4",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "lodash": "^4.17.11",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.16",
+    "mongoose-unique-validator": "^2.0.2",
+    "morgan": "^1.9.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "validator": "^10.11.0"
+  }
+}

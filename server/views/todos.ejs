@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- This file has been downloaded from Bootsnipp.com. Enjoy! -->
+    <title>Todo Example - Bootsnipp.com</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="partials/todo.css">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="todolist not-done">
+             <h1>Todos</h1>
+                <input type="text" class="form-control add-todo" placeholder="Add todo">
+  
+                    <hr>
+                    <ul id="sortable" class="list-unstyled">
+                        <% notCompletedTodos.map(todo => { %>
+                            <li class="ui-state-default">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="<%= todo._id %>" /><%= todo.text %></label>
+                                </div>
+                            </li>
+                        <% }) %>
+                </ul>
+                <div class="todo-footer">
+                    <strong><span class="count-todos"></span></strong> Items Left
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="todolist">
+             <h1>Already Done</h1>
+                <ul id="done-items" class="list-unstyled">
+                    <% completedTodos.map(todo => { %>
+                     <li><%= todo.text %><button class="remove-item btn btn-default btn-xs pull-right" value="<%= todo._id %>"><span class="glyphicon glyphicon-remove"></span></button></li>
+                    <% }) %>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$("#sortable").sortable();
+$("#sortable").disableSelection();
+
+countTodos();
+
+//create todo
+$('.add-todo').on('keypress',function (e) {
+      e.preventDefault
+      if (e.which == 13) {
+          if($(this).val() !== ''){
+             
+           $.ajax({
+               type: "POST",
+               url: "/todos/newtodo",
+               data: {
+                   text: $(this).val()
+               },
+               async: true,
+               success: (todo) => {
+                createTodo(todo); 
+                countTodos();
+               },
+               error: (e) => {
+                alert(e.responseJSON.message)
+               }
+           })
+           }
+      }
+});
+// mark task as done
+$('.todolist').on('change','#sortable li input[type="checkbox"]',function(){
+    if($(this).prop('checked')){
+        $.ajax({
+            type: "POST",
+            url: `/todos/complete/${$(this).val()}`,
+            async: true,
+            success: (a) => {
+                // var doneItem = $(this).parent().parent().find('label').text();
+                $(this).parent().parent().parent().addClass('remove');
+                done(a);
+                countTodos();
+            },
+            error: (e,b,c) => {
+                alert(e.responseJSON.message)
+            }
+        })
+    }
+});
+
+//delete done task from "already done"
+$('.todolist').on('click','.remove-item', function(){
+    $.ajax({
+        type: "POST",
+        url: `/todos/delete/${$(this).val()}`,
+        async: true,
+        success: () => {
+            removeItem(this);
+        },
+        error: (e) => {
+            alert(e.responseJSON.message)
+        }
+    })
+    
+});
+
+// count tasks
+function countTodos(){
+    var count = $("#sortable li").length;
+    $('.count-todos').html(count);
+}
+
+//create task
+function createTodo(todo){
+    var markup = `<li class="ui-state-default"><div class="checkbox"><label><input type="checkbox" value="${todo._id}" />`+ todo.text +'</label></div></li>';
+    $('#sortable').append(markup);
+    $('.add-todo').val('');
+}
+
+//mark task as done
+function done(doneItem){
+    var done = doneItem;
+    var markup = '<li>'+ done.text +`<button class="btn btn-default btn-xs pull-right  remove-item" value=${done._id}><span class="glyphicon glyphicon-remove"></span></button></li>`;
+    $('#done-items').append(markup);
+    $('.remove').remove();
+}
+
+//remove done task from list
+function removeItem(element){
+    $(element).parent().remove();
+}
+</script>
+</body>
+</html>
